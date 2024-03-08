@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  backend:
+    build: ./api
+    volumes:
+      - "./api/AsteroidMiningREST:/src"
+        #      - "node_modules:/src/node_modules"
+    environment:
+      - PGHOST=database
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGDATABASE=asteroid_mining
+      - SERVER_NAME=backend
+#      - HTTPS_ONLY=true
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    restart: always
+
+  database:
+    build: ./model
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres # redacted username
+      - POSTGRES_PASSWORD=postgres # redacted password
+      - POSTGRES_DB=asteroid_mining
+    restart: always
+
+volumes:
+  db_volume:
+
+networks:
+  default:
+    name: rest_api 

@@ -1,0 +1,24 @@
+{
+  "name": "asteroidminingrest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.cjs",
+
+  "type": "module",
+
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": ">=1.20.2",
+    "package.json": "^2.0.1",
+    "pg": ">=8.2.0"
+  },
+  "keywords": [
+    "asteroid",
+    "mining",
+    "space"
+  ],
+  "author": "Constantin Alexa",
+  "license": "GPL-3.0"
+}
