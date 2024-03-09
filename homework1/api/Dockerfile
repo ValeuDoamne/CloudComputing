@@ -4,7 +4,7 @@ WORKDIR /src
 
 COPY ./AsteroidMiningREST/package.json /src
 
-RUN mkdir /src/node_modules
+RUN mkdir -p /src/node_modules
 
 WORKDIR /src
 
