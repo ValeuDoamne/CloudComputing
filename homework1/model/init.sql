@@ -3,9 +3,9 @@ CREATE TABLE asteroids (
     name TEXT
 );
 
-CREATE TABLE sattelites (
+CREATE TABLE spaceprobes (
     id SERIAL NOT NULL PRIMARY KEY,
-    sat_name TEXT,
+    name TEXT,
     fabrication_year INTEGER
 );
 
@@ -38,19 +38,19 @@ CREATE TABLE stations_astronauts (
 
 CREATE TABLE missions (
     id SERIAL NOT NULL PRIMARY KEY,
-    sattelite_id INTEGER REFERENCES sattelites(id) ON DELETE CASCADE,
+    spaceprobe_id INTEGER REFERENCES spaceprobes(id) ON DELETE CASCADE,
     asteroid_id INTEGER REFERENCES asteroids(id) ON DELETE CASCADE,
     mission_name TEXT,
     mission_start DATE,
     mission_end DATE,
-    CONSTRAINT unique_sattelite_id UNIQUE(sattelite_id),
+    CONSTRAINT unique_spaceprobe_id UNIQUE(spaceprobe_id),
     CONSTRAINT unique_asteroid_id UNIQUE(asteroid_id)
 );
 
-CREATE TABLE sattelites_operators (
-    sattelite_id INTEGER REFERENCES sattelites(id) ON DELETE CASCADE,
+CREATE TABLE spaceprobes_operators (
+    spaceprobe_id INTEGER REFERENCES spaceprobes(id) ON DELETE CASCADE,
     astronaut_id INTEGER REFERENCES astronauts(id) ON DELETE CASCADE,
-    CONSTRAINT unique_sattelite_id2 UNIQUE(sattelite_id),
+    CONSTRAINT unique_spaceprobe_id2 UNIQUE(spaceprobe_id),
     CONSTRAINT unique_astronaut_id2 UNIQUE(astronaut_id)
 );
 

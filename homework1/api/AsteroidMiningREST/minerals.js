@@ -11,13 +11,13 @@ function not_found(res) {
 
 async function handle_get(req, res) {
     let matches = null;
-    if (req.url === "/v1/asteroids") {
-        const response = await client.query("SELECT * FROM asteroids");
+    if (req.url === "/v1/minerals") {
+        const response = await client.query("SELECT * FROM minerals");
         res.writeHead(200, 'Content-Type: application/json');
-        res.end(JSON.stringify({asteroids: response.rows}));
-    } else if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)$/)) != null) {
+        res.end(JSON.stringify({minerals: response.rows}));
+    } else if ((matches = req.url.match(/\/v1\/minerals\/(\d+)$/)) != null) {
         const id = parseInt(matches[1]);
-        const response = await client.query('SELECT * FROM asteroids WHERE id=$1', [id]);
+        const response = await client.query('SELECT * FROM minerals WHERE id=$1', [id]);
 
         if (response.rowCount > 0) {
             res.writeHead(200, { headers : 'Content-Type: application/json'});
@@ -30,7 +30,7 @@ async function handle_get(req, res) {
 }
 
 async function handle_post(req, res) {
-    if (req.url === "/v1/asteroids/new") {
+    if (req.url === "/v1/minerals/new") {
         handle_body_request(req, res, async (res, body) => { // TODO: remove the `req` as a parameter
             if (Object.keys(body).length != 1) {
                 res.writeHead(400, 'Content-Type: application/json');
@@ -42,7 +42,7 @@ async function handle_post(req, res) {
                 res.end(JSON.stringify({error: 'The key `name` does not exist!'}));
                 return;
             }
-            const response = await client.query('INSERT INTO asteroids(name) VALUES ($1) RETURNING id', [body.name]);
+            const response = await client.query('INSERT INTO minerals(name) VALUES ($1) RETURNING id', [body.name]);
             res.writeHead(201, 'Content-Type: application/json');
             res.end(JSON.stringify({id: response.rows[0]["id"]}));
         });
@@ -51,7 +51,7 @@ async function handle_post(req, res) {
 
 async function handle_put(req, res) {
     let matches = null;
-    if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)\/rename$/)) != null) {
+    if ((matches = req.url.match(/\/v1\/minerals\/(\d+)\/rename$/)) != null) {
         const id = parseInt(matches[1]);
         handle_body_request(req, res, async (res, body) => {
             if (Object.keys(body).length != 1) {
@@ -64,7 +64,7 @@ async function handle_put(req, res) {
                 res.end(JSON.stringify({error: 'The key `name` does not exist!'}));
                 return;
             }
-            const response = await client.query('UPDATE asteroids SET name=$2 WHERE id=$1  RETURNING id,name', [id, body.name]);
+            const response = await client.query('UPDATE minerals SET name=$2 WHERE id=$1 RETURNING id,name', [id, body.name]);
             res.writeHead(200, { headers : 'Content-Type: application/json'});
             res.end(JSON.stringify({asteroid: response.rows}));
         });
@@ -73,15 +73,15 @@ async function handle_put(req, res) {
 
 async function handle_delete(req, res) {
     let matches = null;
-    if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)\/destroy$/)) != null) {
+    if ((matches = req.url.match(/\/v1\/minerals\/(\d+)\/forget$/)) != null) {
         const id = parseInt(matches[1]);
-        await client.query('DELETE FROM asteroids WHERE id=$1', [id]);
+        await client.query('DELETE FROM minerals WHERE id=$1', [id]);
         res.writeHead(200, { headers : 'Content-Type: application/json'});
-        res.end(JSON.stringify({success: "Asteroid nuked successfully!"}));
+        res.end(JSON.stringify({success: "Successfully forgot about the mineral!"}));
     } else not_found(res);
 }
 
-async function handle_asteroids_request(req, res) {
+async function handle_minerals_request(req, res) {
     switch(req.method) {
         case 'GET':
             await handle_get(req, res);
@@ -100,4 +100,4 @@ async function handle_asteroids_request(req, res) {
             res.end(JSON.stringify({error: "No such method"}));
     }
 }
-export default handle_asteroids_request;
+export default handle_minerals_request;

@@ -11,17 +11,17 @@ function not_found(res) {
 
 async function handle_get(req, res) {
     let matches = null;
-    if (req.url === "/v1/asteroids") {
-        const response = await client.query("SELECT * FROM asteroids");
+    if (req.url === "/v1/stations") {
+        const response = await client.query("SELECT * FROM stations");
         res.writeHead(200, 'Content-Type: application/json');
-        res.end(JSON.stringify({asteroids: response.rows}));
-    } else if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)$/)) != null) {
+        res.end(JSON.stringify({stations: response.rows}));
+    } else if ((matches = req.url.match(/\/v1\/stations\/(\d+)$/)) != null) {
         const id = parseInt(matches[1]);
-        const response = await client.query('SELECT * FROM asteroids WHERE id=$1', [id]);
+        const response = await client.query('SELECT * FROM stations WHERE id=$1', [id]);
 
         if (response.rowCount > 0) {
             res.writeHead(200, { headers : 'Content-Type: application/json'});
-            res.end(JSON.stringify({asteroid: response.rows[0]}));
+            res.end(JSON.stringify({station: response.rows[0]}));
         } else {
             res.writeHead(404, { headers : 'Content-Type: application/json'});
             res.end(JSON.stringify({error: "The id provided `"+id.toString()+"` was not found"}));
@@ -30,19 +30,24 @@ async function handle_get(req, res) {
 }
 
 async function handle_post(req, res) {
-    if (req.url === "/v1/asteroids/new") {
-        handle_body_request(req, res, async (res, body) => { // TODO: remove the `req` as a parameter
-            if (Object.keys(body).length != 1) {
+    if (req.url === "/v1/stations/new") {
+        handle_body_request(req, res, async (res, body) => {
+            if (Object.keys(body).length != 2) {
                 res.writeHead(400, 'Content-Type: application/json');
-                res.end(JSON.stringify({error: 'The provided JSON number of keys != 1'}));
+                res.end(JSON.stringify({error: 'The provided JSON number of keys != 2'}));
                 return;
             }
-            if (('name' in body) === false) {
+            if (('station_name' in body) === false) {
                 res.writeHead(400, 'Content-Type: application/json');
-                res.end(JSON.stringify({error: 'The key `name` does not exist!'}));
+                res.end(JSON.stringify({error: 'The key `station_name` does not exist!'}));
                 return;
             }
-            const response = await client.query('INSERT INTO asteroids(name) VALUES ($1) RETURNING id', [body.name]);
+            if (('location' in body) === false) {
+                res.writeHead(400, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: 'The key `location` does not exist!'}));
+                return;
+            }
+            const response = await client.query('INSERT INTO stations(station_name, location) VALUES ($1,$2) RETURNING id', [body.station_name, body.location]);
             res.writeHead(201, 'Content-Type: application/json');
             res.end(JSON.stringify({id: response.rows[0]["id"]}));
         });
@@ -51,37 +56,42 @@ async function handle_post(req, res) {
 
 async function handle_put(req, res) {
     let matches = null;
-    if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)\/rename$/)) != null) {
+    if ((matches = req.url.match(/\/v1\/stations\/(\d+)\/change$/)) != null) {
         const id = parseInt(matches[1]);
         handle_body_request(req, res, async (res, body) => {
-            if (Object.keys(body).length != 1) {
+            if (Object.keys(body).length != 2) {
                 res.writeHead(400, 'Content-Type: application/json');
-                res.end(JSON.stringify({error: 'The provided JSON number of keys != 1'}));
+                res.end(JSON.stringify({error: 'The provided JSON number of keys != 2'}));
                 return;
             }
-            if (('name' in body) === false) {
+            if (('station_name' in body) === false) {
                 res.writeHead(400, 'Content-Type: application/json');
-                res.end(JSON.stringify({error: 'The key `name` does not exist!'}));
+                res.end(JSON.stringify({error: 'The key `station_name` does not exist!'}));
                 return;
             }
-            const response = await client.query('UPDATE asteroids SET name=$2 WHERE id=$1  RETURNING id,name', [id, body.name]);
+            if (('location' in body) === false) {
+                res.writeHead(400, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: 'The key `location` does not exist!'}));
+                return;
+            }
+            const response = await client.query('UPDATE stations SET station_name=$2,location=$3 WHERE id=$1  RETURNING id,station_name', [id, body.station_name, body.location]);
             res.writeHead(200, { headers : 'Content-Type: application/json'});
-            res.end(JSON.stringify({asteroid: response.rows}));
+            res.end(JSON.stringify({station: response.rows}));
         });
     } else not_found(res);
 }
 
 async function handle_delete(req, res) {
     let matches = null;
-    if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)\/destroy$/)) != null) {
+    if ((matches = req.url.match(/\/v1\/stations\/(\d+)\/destroy$/)) != null) {
         const id = parseInt(matches[1]);
-        await client.query('DELETE FROM asteroids WHERE id=$1', [id]);
+        await client.query('DELETE FROM stations WHERE id=$1', [id]);
         res.writeHead(200, { headers : 'Content-Type: application/json'});
-        res.end(JSON.stringify({success: "Asteroid nuked successfully!"}));
+        res.end(JSON.stringify({success: "The station was destroied. We all gonna die!"}));
     } else not_found(res);
 }
 
-async function handle_asteroids_request(req, res) {
+async function handle_stations_request(req, res) {
     switch(req.method) {
         case 'GET':
             await handle_get(req, res);
@@ -100,4 +110,4 @@ async function handle_asteroids_request(req, res) {
             res.end(JSON.stringify({error: "No such method"}));
     }
 }
-export default handle_asteroids_request;
+export default handle_stations_request;

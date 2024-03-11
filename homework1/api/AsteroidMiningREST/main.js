@@ -1,29 +1,26 @@
 import http from 'http';
 import asteroids from './asteroids.js';
-import bodyParser from 'body-parser';
+import astronauts from './astronauts.js';
+import spaceprobes from './spaceprobes.js';
+import stations from './stations.js';
+import minerals from './minerals.js';
+import missions from './missions.js';
 
 async function handle_request(req, res) {
-    const json_header = 'Content-Type: application/json'
-
     if (req.url.startsWith("/v1/asteroids")) {
-        const response = await asteroids(req);
-        res.writeHead(200, { headers: json_header } );
-        res.end(response);
+        asteroids(req, res);
     } else if (req.url.startsWith("/v1/astronauts")) {
-        console.log(req);
-        console.log(req.body);
-        res.writeHead(200, { headers: json_header } );
-        res.end(JSON.stringify({"data": "Everything is fine"}));
+        astronauts(req,res);
     } else if (req.url.startsWith("/v1/stations")) {
-   
+       stations(req, res); 
+    } else if (req.url.startsWith("/v1/spaceprobes")) {
+        spaceprobes(req,res); 
     } else if (req.url.startsWith("/v1/missions")) {
-    
-    } else if (req.url.startsWith("/v1/missions")) {
-
+        missions(req,res);
     } else if (req.url.startsWith("/v1/minerals")) {
-
+        minerals(req,res);
     } else {
-        res.writeHead(404, { headers: json_header });
+        res.writeHead(404, { headers: 'Content-Type: application/json'});
         res.end(JSON.stringify({error: "Not found"}));
     }
 }
