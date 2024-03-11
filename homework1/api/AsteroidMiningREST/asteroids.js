@@ -9,6 +9,14 @@ function not_found(res) {
     res.end(JSON.stringify({error: 'Not found!'}));
 }
 
+async function check_valid_asteroid_id(asteroid_id) {
+    const response = await client.query('SELECT * FROM asteroids WHERE id = $1', [asteroid_id]);
+    if (response.rowCount > 0) {
+        return true;
+    }
+    return false;
+}
+
 async function handle_get(req, res) {
     let matches = null;
     if (req.url === "/v1/asteroids") {
@@ -17,6 +25,11 @@ async function handle_get(req, res) {
         res.end(JSON.stringify({asteroids: response.rows}));
     } else if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_asteroid_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided asteroid id was not found'}));
+            return;
+        }
         const response = await client.query('SELECT * FROM asteroids WHERE id=$1', [id]);
 
         if (response.rowCount > 0) {
@@ -53,6 +66,11 @@ async function handle_put(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)\/rename$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_asteroid_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided asteroid id was not found'}));
+            return;
+        }
         handle_body_request(req, res, async (res, body) => {
             if (Object.keys(body).length != 1) {
                 res.writeHead(400, 'Content-Type: application/json');
@@ -75,6 +93,11 @@ async function handle_delete(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/asteroids\/(\d+)\/destroy$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_asteroid_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided asteroid id was not found'}));
+            return;
+        }
         await client.query('DELETE FROM asteroids WHERE id=$1', [id]);
         res.writeHead(200, { headers : 'Content-Type: application/json'});
         res.end(JSON.stringify({success: "Asteroid nuked successfully!"}));

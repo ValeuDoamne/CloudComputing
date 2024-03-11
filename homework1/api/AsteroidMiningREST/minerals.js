@@ -9,6 +9,14 @@ function not_found(res) {
     res.end(JSON.stringify({error: 'Not found!'}));
 }
 
+async function check_valid_mineral_id(mineral_id) {
+    const response = await client.query('SELECT * FROM minerals WHERE id = $1', [mineral_id]);
+    if (response.rowCount > 0) {
+        return true;
+    }
+    return false;
+}
+
 async function handle_get(req, res) {
     let matches = null;
     if (req.url === "/v1/minerals") {
@@ -21,7 +29,7 @@ async function handle_get(req, res) {
 
         if (response.rowCount > 0) {
             res.writeHead(200, { headers : 'Content-Type: application/json'});
-            res.end(JSON.stringify({asteroid: response.rows[0]}));
+            res.end(JSON.stringify({mineral: response.rows[0]}));
         } else {
             res.writeHead(404, { headers : 'Content-Type: application/json'});
             res.end(JSON.stringify({error: "The id provided `"+id.toString()+"` was not found"}));
@@ -53,6 +61,11 @@ async function handle_put(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/minerals\/(\d+)\/rename$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_mineral_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided mineral id was not found'}));
+            return;
+        }
         handle_body_request(req, res, async (res, body) => {
             if (Object.keys(body).length != 1) {
                 res.writeHead(400, 'Content-Type: application/json');
@@ -66,7 +79,7 @@ async function handle_put(req, res) {
             }
             const response = await client.query('UPDATE minerals SET name=$2 WHERE id=$1 RETURNING id,name', [id, body.name]);
             res.writeHead(200, { headers : 'Content-Type: application/json'});
-            res.end(JSON.stringify({asteroid: response.rows}));
+            res.end(JSON.stringify({mineral: response.rows}));
         });
     } else not_found(res);
 }
@@ -75,6 +88,11 @@ async function handle_delete(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/minerals\/(\d+)\/forget$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_mineral_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided mineral id was not found'}));
+            return;
+        }
         await client.query('DELETE FROM minerals WHERE id=$1', [id]);
         res.writeHead(200, { headers : 'Content-Type: application/json'});
         res.end(JSON.stringify({success: "Successfully forgot about the mineral!"}));

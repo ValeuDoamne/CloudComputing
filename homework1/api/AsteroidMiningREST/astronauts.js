@@ -17,6 +17,14 @@ async function check_valid_astronaut_id(astronaut_id) {
     return false;
 }
 
+async function check_station_id(station_id) {
+    const response = await client.query('SELECT * FROM stations WHERE id = $1', [station_id]);
+    if (response.rowCount > 0) {
+        return true;
+    }
+    return false;
+}
+
 async function handle_get(req, res) {
     let matches = null;
     if (req.url === "/v1/astronauts") {
@@ -63,6 +71,11 @@ async function handle_post(req, res) {
                 res.end(JSON.stringify({error: check_result.message}));
                 return;
             }
+            if ((await check_station_id(body.station_id)) === false) {
+                res.writeHead(404, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: 'The stations_id provided was not found'}));
+                return;
+            }
             const response = await client.query('INSERT INTO astronauts(station_id, first_name, last_name, salary, birth) VALUES ($1, $2, $3, $4, $5) RETURNING id', [body.station_id, body.first_name, body.last_name, body.salary, body.birth]);
             res.writeHead(201, 'Content-Type: application/json');
             res.end(JSON.stringify({id: response.rows[0]["id"]}));
@@ -93,8 +106,8 @@ async function handle_delete(req, res) {
     if ((matches = req.url.match(/\/v1\/astronauts\/(\d+)\/remove$/)) != null) {
         const id = parseInt(matches[1]);
         if (await check_valid_astronaut_id(id) === false) {
-            res.writeHead(400, 'Content-Type: application/json');
-            res.end(JSON.stringify({error: 'The provided astronaut id is invalid'}));
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided astronaut id was not found'}));
             return;
         }
         await client.query('DELETE FROM astronauts WHERE id=$1', [id]);

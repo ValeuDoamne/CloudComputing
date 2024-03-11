@@ -86,8 +86,8 @@ async function handle_get(req, res) {
     } else if ((matches = req.url.match(/^\/v1\/missions\/(\d+)\/minerals$/)) != null) {
         const id = parseInt(matches[1]);
         if (await check_valid_mission_id(id) === false) {
-            res.writeHead(400, 'Content-Type: application/json');
-            res.end(JSON.stringify({error: 'THe mission id is not valid'}));
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'THe mission id was not found'}));
             return;
         }
         const response = await client.query('SELECT id as mineral_id, name FROM minerals m JOIN missions_minerals mm ON m.id = mm.mineral_id WHERE mm.mission_id = $1', [id]);
@@ -123,8 +123,8 @@ async function handle_post(req, res) {
     } else if ((matches = req.url.match(/^\/v1\/missions\/(\d+)\/add_mineral$/)) != null) {
         const id = parseInt(matches[1]);
         if (await check_valid_mission_id(id) === false) {
-            res.writeHead(400, 'Content-Type: application/json');
-            res.end(JSON.stringify({error: 'THe mission id is not valid'}));
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'THe mission id was not found'}));
             return;
         }
         if (await was_mission_ended(id)) {
@@ -162,6 +162,11 @@ async function handle_put(req, res) {
     let matches = null;
     if ((matches = req.url.match(/^\/v1\/missions\/(\d+)\/rename$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_mission_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'THe mission id was not found'}));
+            return;
+        }
         handle_body_request(req, res, async (res, body) => {
             if (Object.keys(body).length != 1) {
                 res.writeHead(400, 'Content-Type: application/json');
@@ -179,6 +184,11 @@ async function handle_put(req, res) {
         });
     } else if ((matches = req.url.match(/^\/v1\/missions\/(\d+)\/end$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_mission_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'THe mission id was not found'}));
+            return;
+        }
         if (await was_mission_ended(id)) {
             res.writeHead(400, 'Content-Type: application/json');
             res.end(JSON.stringify({error: 'THe mission was already ended'}));
@@ -194,6 +204,11 @@ async function handle_delete(req, res) {
     let matches = null;
     if ((matches = req.url.match(/^\/v1\/missions\/(\d+)\/abort$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_mission_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'THe mission id was not found'}));
+            return;
+        }
         await client.query('DELETE FROM missions WHERE id=$1', [id]);
         res.writeHead(200, { headers : 'Content-Type: application/json'});
         res.end(JSON.stringify({success: "Mission aborted successfully!"}));

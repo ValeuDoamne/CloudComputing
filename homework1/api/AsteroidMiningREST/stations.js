@@ -9,6 +9,14 @@ function not_found(res) {
     res.end(JSON.stringify({error: 'Not found!'}));
 }
 
+async function check_valid_station_id(station_id) {
+    const response = await client.query('SELECT * FROM stations WHERE id = $1', [station_id]);
+    if (response.rowCount > 0) {
+        return true;
+    }
+    return false;
+}
+
 async function handle_get(req, res) {
     let matches = null;
     if (req.url === "/v1/stations") {
@@ -58,6 +66,11 @@ async function handle_put(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/stations\/(\d+)\/change$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_station_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided station id was not found'}));
+            return;
+        }
         handle_body_request(req, res, async (res, body) => {
             if (Object.keys(body).length != 2) {
                 res.writeHead(400, 'Content-Type: application/json');
@@ -85,9 +98,14 @@ async function handle_delete(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/stations\/(\d+)\/destroy$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_station_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided station id was not found'}));
+            return;
+        }
         await client.query('DELETE FROM stations WHERE id=$1', [id]);
         res.writeHead(200, { headers : 'Content-Type: application/json'});
-        res.end(JSON.stringify({success: "The station was destroied. We all gonna die!"}));
+        res.end(JSON.stringify({success: "The station was destroyed. We all gonna die!"}));
     } else not_found(res);
 }
 

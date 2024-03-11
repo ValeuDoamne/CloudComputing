@@ -9,6 +9,14 @@ function not_found(res) {
     res.end(JSON.stringify({error: 'Not found!'}));
 }
 
+async function check_valid_spaceprobe_id(spaceprobe_id) {
+    const response = await client.query('SELECT * FROM spaceprobes WHERE id = $1', [spaceprobe_id]);
+    if (response.rowCount > 0) {
+        return true;
+    }
+    return false;
+}
+
 async function handle_get(req, res) {
     let matches = null;
     if (req.url === "/v1/spaceprobes") {
@@ -73,6 +81,11 @@ async function handle_post(req, res) {
         });
     } else if ((match = req.url.match(/\/v1\/spaceprobes\/(\d+)\/operator$/)) != null) {
         const id = parseInt(match[1]);
+        if (await check_valid_spaceprobe_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided spaceprobe id was not found'}));
+            return;
+        }
         if (await already_has_operator(id)) {
             res.writeHead(422, 'Content-Type: application/json'); // Unprocessable entity
             res.end(JSON.stringify({error: "The spaceproble requested has already an operator"}));
@@ -106,6 +119,11 @@ async function handle_put(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/spaceprobes\/(\d+)\/change$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_spaceprobe_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided spaceprobe id was not found'}));
+            return;
+        }
         handle_body_request(req, res, async (res, body) => {
             if (Object.keys(body).length !== 2) {
                 res.writeHead(400, 'Content-Type: application/json');
@@ -133,11 +151,21 @@ async function handle_delete(req, res) {
     let matches = null;
     if ((matches = req.url.match(/\/v1\/spaceprobes\/(\d+)\/destroy$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_spaceprobe_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided spaceprobe id was not found'}));
+            return;
+        }
         await client.query('DELETE FROM spaceprobes WHERE id=$1', [id]);
         res.writeHead(200, { headers : 'Content-Type: application/json'});
         res.end(JSON.stringify({success: "Spaceprobe destroyed! You monster!"}));
     } else if ((matches = req.url.match(/\/v1\/spaceprobes\/(\d+)\/operator$/)) != null) {
         const id = parseInt(matches[1]);
+        if (await check_valid_spaceprobe_id(id) === false) {
+            res.writeHead(404, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: 'The provided spaceprobe id was not found'}));
+            return;
+        }
         const response = await client.query('DELETE FROM spaceprobes_operators WHERE spaceprobe_id=$1', [id]);
         if (response.rowCount > 0) {
             res.writeHead(200, { headers : 'Content-Type: application/json'});
