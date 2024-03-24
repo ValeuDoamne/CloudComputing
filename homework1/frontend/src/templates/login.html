@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unnamed Asteroid Mining Co.</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='styles/styles.css') }}>
+    <script type="text/javascript" src={{url_for('static', filename='js/login.js')}}></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+    <h1>Welcome to creating a future with us</h1>
+    <div class="center-form">
+        <div>
+            <p>Username <input placeholder="Username" type="text" id="username"/></p>
+            <p>Password <input placeholder="Password.." type="password" id="password"/></p>
+            <button onclick="login()">Login</button>
+            <p>Not having an accout? <a href="/register">Register</a></p>
+            <div class="hidden error" id="invalid-user-pass">
+                <p>Username or passsword is invalid</p>
+            </div>
+        </div> 
+    </div>
+</body>
+</html>

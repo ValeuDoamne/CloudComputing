@@ -1,5 +1,6 @@
 import pg from 'pg';
 import handle_body_request from './handle_body_request.js';
+import check_for_logged_token from './require_login.js';
 
 const client = new pg.Client();
 await client.connect()
@@ -100,6 +101,11 @@ async function handle_delete(req, res) {
 }
 
 async function handle_minerals_request(req, res) {
+    const is_logged_in = await check_for_logged_token(req);
+    if (!is_logged_in) {
+        res.writeHead(401, {headers: 'Content-Type application/json'});
+        res.end(JSON.stringify({error: "Not authorized"}));
+    }
     switch(req.method) {
         case 'GET':
             await handle_get(req, res);

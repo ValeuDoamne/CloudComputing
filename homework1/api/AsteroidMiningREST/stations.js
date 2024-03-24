@@ -89,7 +89,7 @@ async function handle_put(req, res) {
             }
             const response = await client.query('UPDATE stations SET station_name=$2,location=$3 WHERE id=$1  RETURNING id,station_name', [id, body.station_name, body.location]);
             res.writeHead(200, { headers : 'Content-Type: application/json'});
-            res.end(JSON.stringify({station: response.rows}));
+            res.end(JSON.stringify({station: response.rows[0]}));
         });
     } else not_found(res);
 }

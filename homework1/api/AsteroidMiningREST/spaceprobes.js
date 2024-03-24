@@ -17,6 +17,14 @@ async function check_valid_spaceprobe_id(spaceprobe_id) {
     return false;
 }
 
+async function check_valid_astronaut_id(astronaut_id) {
+    const response = await client.query('SELECT * FROM astronauts WHERE id = $1', [astronaut_id]);
+    if (response.rowCount > 0) {
+        return true;
+    }
+    return false;
+}
+
 async function handle_get(req, res) {
     let matches = null;
     if (req.url === "/v1/spaceprobes") {
@@ -102,6 +110,11 @@ async function handle_post(req, res) {
                 res.end(JSON.stringify({error: 'The key `astronaut_id` does not exist!'}));
                 return;
             }
+            if ((await check_valid_astronaut_id(body.astronaut_id)) == false) {
+                res.writeHead(400, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: `The \`astronaut_id\`=${body.astronaut_id} provided does not exists`}));
+                return;
+            }
             const response = await client.query('INSERT INTO spaceprobes_operators(spaceprobe_id, astronaut_id) VALUES ($1, $2)', [id, body.astronaut_id]);
             
             if (response.rowCount != null && response.rowCount > 0) {
@@ -140,9 +153,9 @@ async function handle_put(req, res) {
                 res.end(JSON.stringify({error: 'The key `fabrication_year` does not exist!'}));
                 return;
             }
-            const response = await client.query('UPDATE spaceprobes SET name=$2,fabrication_year=$3 WHERE id=$1  RETURNING id,name,fabrication_year', [id, body.name, body.fabrication_year]);
+            const response = await client.query('UPDATE spaceprobes SET name=$2, fabrication_year=$3 WHERE id=$1  RETURNING id,name,fabrication_year', [id, body.name, body.fabrication_year]);
             res.writeHead(200, { headers : 'Content-Type: application/json'});
-            res.end(JSON.stringify({spaceprobe: response.rows}));
+            res.end(JSON.stringify({spaceprobe: response.rows[0]}));
         });
     } else not_found(res);
 }

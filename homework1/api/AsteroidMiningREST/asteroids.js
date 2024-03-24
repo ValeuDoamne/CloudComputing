@@ -1,5 +1,7 @@
 import pg from 'pg';
+import randomInt from 'crypto';
 import handle_body_request from './handle_body_request.js';
+import https from 'https';
 
 const client = new pg.Client();
 await client.connect()
@@ -59,6 +61,33 @@ async function handle_post(req, res) {
             res.writeHead(201, 'Content-Type: application/json');
             res.end(JSON.stringify({id: response.rows[0]["id"]}));
         });
+    } else if (req.url === "/v1/asteroids/explore") {
+        handle_body_request(req, res, async (res, body) => { // TODO: remove the `req` as a parameter
+            if (Object.keys(body).length != 1) {
+                res.writeHead(400, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: 'The provided JSON number of keys != 1'}));
+                return;
+            }
+            if (('number_of_asteroids' in body) === false) {
+                res.writeHead(400, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: 'The key `number_of_asteroids` does not exist!'}));
+                return;
+            }
+
+            const random_number = randomInt.randomInt(656);
+            const options = new URL(`https://ssd-api.jpl.nasa.gov/sbdb_query.api?fields=full_name&full-prec=false&limit=10&limit-from=${random_number}&sb-class=MCA&sb-kind=a&sb-ns=n&sort=full_name&www=1`);
+
+            const req = https.request(options, (res) => {
+                console.log(res);
+            });
+
+            req.end();
+            
+            //const response = await client.query('INSERT INTO asteroids(name) VALUES ($1) RETURNING id', [body.name]);
+            res.writeHead(201, 'Content-Type: application/json');
+            res.end(JSON.stringify({id: 1337}));
+        });
+
     } else not_found(res); 
 }
 

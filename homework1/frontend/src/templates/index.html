@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unnamed Asteroid Mining Co.</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='styles/styles.css') }}>
+    <script type="text/javascript" src={{url_for('static', filename='js/index.js')}}></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+</head>
+<body class="main-page">
+    <h1 class="main-title">Unnamed Asteroid Mining Company</h1>
+    <div class="main-stats">
+        <img src={{ url_for('static', filename='imgs/asteroid2.png') }}  />
+    {% for key in stats %}
+        <h2>{{key}} <br/>{{stats[key]}}</h2>
+    {% endfor %}
+        <img src={{ url_for('static', filename='imgs/asteroid1.png') }}  />
+    </div>
+    <div class="login-btn-container">
+        <button class="login-btn" onclick="login_clicked()" >Login >>></button>
+    </div>
+    <div class="spaceprobe-container">
+        <img src={{ url_for('static', filename='imgs/spaceprobe.png') }} />
+    </div>
+</body>
+</html>

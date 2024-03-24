@@ -1,32 +1,63 @@
 version: "3"
 
 services:
+  frontend:
+    build: ./frontend
+    volumes:
+      - "./frontend/src:/src"
+      - ./certs:/etc/nginx/certs
+    ports:
+      - "80:80"   # remove in production
+      - "443:443"
+    depends_on:
+      - backend
+    restart: always
+
   backend:
     build: ./api
     volumes:
       - "./api/AsteroidMiningREST:/src"
-        #      - "node_modules:/src/node_modules"
+#      - "node_modules:/src/node_modules"
     environment:
       - PGHOST=database
       - PGUSER=postgres
       - PGPASSWORD=postgres
       - PGDATABASE=asteroid_mining
       - SERVER_NAME=backend
+      - JWT_SECRET=secret
 #      - HTTPS_ONLY=true
     ports:
       - "8000:8000"
     depends_on:
       - database
     restart: always
-
+  
+#   users:
+#     build: ./users
+#     volumes:
+#       - "./users/api:/src"
+#     environment:
+#       - JWT_SECRET=secret
+#       - PGHOST=database
+#       - PGUSER=postgres
+#       - PGPASSWORD=postgres
+#       - PGDATABASE=users
+#       - SERVER_NAME=users
+# #      - HTTPS_ONLY=true
+#     ports:
+#       - "5000:5000"
+#     depends_on:
+#       - database
+#     restart: always
+  
   database:
     build: ./model
     volumes:
       - db_volume:/var/lib/postgresql/data
     environment:
+      - POSTGRES_MULTIPLE_DATABASES=asteroid_mining
       - POSTGRES_USER=postgres # redacted username
       - POSTGRES_PASSWORD=postgres # redacted password
-      - POSTGRES_DB=asteroid_mining
     restart: always
 
 volumes:

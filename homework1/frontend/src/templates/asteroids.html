@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unnamed Asteroid Mining Co.</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='styles/styles.css') }}>
+    <script type="text/javascript" src={{url_for('static', filename='js/asteroids.js')}}></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+</head>
+<body class="asteroids-page">
+    <h1>Welcome to the asteroids menu</h1>
+    <div class="get-all-probes">
+        <span>
+            <h3>Get all known asteroids</h3>
+            <button onclick="get_all_asteroids()" id="btn-get-all">Activate</button>
+        </span>
+        <textarea readonly="true" class="hidden terminal" id="terminal-get-all">
+        </textarea>
+    </div>
+    <div class="get-all-probes">
+        <span>
+            <h3>Explore for asteroids</h3>
+            <button onclick="show_add_submenu()" id="btn-submenu">Show SubMenu</button>
+        </span>
+        <div class="hidden" id="submenu-add">
+            <span><h4>Asteroid name</h4><input placeholder="Name..." type="text" id="input-add-name" /></span>
+            <span><h4>Asteroid Fabrication Year</h4><input placeholder="Name..." type="number" id="input-add-fabrication" /></span>
+            <span><h4>Add asteroid</h4><button onclick="add_spaceprobe()" id="btn-add">Add to Fleet</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-add"></textarea>
+        </div>
+    </div>
+    <div class="get-all-probes">
+        <span>
+            <h3>Modify a asteroid from the records</h3>
+            <button onclick="show_modify_submenu()" id="btn-submenu-modify">Show SubMenu</button>
+        </span>
+        <div class="hidden" id="submenu-modify">
+            <span><h4>Asteroid ID</h4><input placeholder="Name..." type="number" id="input-modify-asteroid" /></span>
+            <span><h4>Asteroid name</h4><input placeholder="Name..." type="text" id="input-modify-name" /></span>
+            <span><h4>Modify asteroid</h4><button onclick="modify_asteroid()" id="btn-modify">Modify</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-modify"></textarea>
+        </div>
+    </div>
+    <div class="get-all-probes">
+        <span>
+            <h3>Delete asteoids from records</h3>
+            <button onclick="show_destroy_submenu()" id="btn-submenu-modify">Show SubMenu</button>
+        </span>
+        <div class="hidden" id="submenu-modify">
+            <span><h4>Asteroid ID</h4><input placeholder="Name..." type="number" id="input-destory-asteroid" /></span>
+            <span><h4>Modify asteroid</h4><button onclick="destory_asteoid()" id="btn-destroy">Destroy</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-destory"></textarea>
+        </div>
+    </div>
+</body>
+</html>

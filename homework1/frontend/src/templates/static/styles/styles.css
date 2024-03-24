@@ -1,0 +1,150 @@
+body {
+    color: white;
+    font-family: Oswald;
+}
+
+.login-page {
+    background-image: url('/static/imgs/stars.jpg');
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.main-page {
+    background-image: url('/static/imgs/space.jpg');
+}
+
+.main-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.main-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.main-stats h2 {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.main-stats img {
+    height: 30%;
+    width: 30%;
+    animation: spin 4s linear infinite;
+}
+@keyframes spin { 
+    100% { 
+        -webkit-transform: rotate(360deg); 
+        transform:rotate(360deg); 
+    } 
+}
+
+.login-btn-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+
+.login-btn {
+    font-family: Oswald;
+    font-size: 30px;
+    border-style: solid;
+    border-radius: 45%;
+    padding: 10px;
+}
+
+.spaceprobe-container {
+    position: absolute;
+    animation: linear infinite;
+    animation-name: run;
+    animation-duration: 2s;
+}
+
+@keyframes run {
+  0% {
+    left: 0;
+  }
+  50% { 
+    left: calc(100% - 100px); 
+   }
+  100% {
+    opacity: 0;
+    height: 0;
+  }
+}
+ 
+.spaceprobe-container img {
+    height: 30%;
+    width: 30%;
+}
+
+.center-form {
+    border-style: solid;
+    box-shadow: 10px;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.center-form div {
+    text-align: left;
+}
+
+.hidden {
+    display: none;
+}
+
+.error {
+    color: red;
+    border-color: red
+}
+
+
+.dashboard-page {
+    background-image: url('/static/imgs/stars1.jpg');
+}
+
+.dashboard-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashboard-menu-item {
+    padding: 20px;
+}
+
+.spaceprobes-page {
+    background-image: url('/static/imgs/spaceprobe1.jpg');
+}
+
+.terminal {
+    color: #35f709;
+    background-color: black;
+    resize: none;
+    width: 450px;
+    height: 500px;
+    margin-left: 20px
+}
+
+span {
+    display: flex;
+    flex-direction: row;
+}
+
+span * {
+    margin: 20px;
+}
+
+.asteroids-page {
+    background-image: url('/static/imgs/asteroid_background.jpg');
+}
