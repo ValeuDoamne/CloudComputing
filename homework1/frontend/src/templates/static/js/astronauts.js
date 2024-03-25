@@ -1,15 +1,15 @@
-async function get_all_spaceprobes() {
+async function get_all_astronauts() {
     const button = document.getElementById("btn-get-all");
     button.textContent = "Clean Terminal";
     button.onclick = () => {
-        button.onclick = get_all_spaceprobes;
+        button.onclick = get_all_astronauts;
         terminal.classList.add("hidden");
         button.textContent = "Activate";
     } 
     const terminal = document.getElementById("terminal-get-all");
     terminal.classList.remove("hidden");
     terminal.value = "Sending request to mainframe...";
-    let res = await fetch('/api/v1/spaceprobes',
+    let res = await fetch('/api/v1/astronauts',
         {
             method: 'GET',
             headers: {Authorization: `Bearer ${localStorage.getItem('TOKEN')}`}
@@ -19,19 +19,19 @@ async function get_all_spaceprobes() {
     res = await res.json(); 
     terminal.value += "Done\n";
 
-    if ('spaceprobes' in res) {
-        const spaceprobes = res.spaceprobes;
+    if ('astronauts' in res) {
+        const astronauts = res.astronauts;
 
-        if (spaceprobes.length === 0) {
-            terminal.value += "We don't have any spaceprobes 😱\n";
+        if (astronauts.length === 0) {
+            terminal.value += "We don't have any astronauts 😱\n";
         } else {
-            terminal.value += `We have a total of ${spaceprobes.length} spaceprobes\nWith the following ids:\n`
-            spaceprobes.forEach((x) => {
-                terminal.value += `id: ${x.id}, name: \`${x.name}\`, fabrication year: \`${x.fabrication_year}\`\n`;
+            terminal.value += `We have a total of ${astronauts.length} astronauts\nWith the following ids:\n`
+            astronauts.forEach((x) => {
+                terminal.value += `id: ${x.id}, fist name: \`${x.first_name}\`, last name: \`${x.last_name}\`, station id: \`${x.station_id}\`, salary: \`${x.salary}\` birth: \`${x.birth}\`\n`;
             });
         }
     } else {
-        terminal.value += "The mainframe cannot get the spaceprobes\n";
+        terminal.value += "The mainframe cannot get the astronauts\n";
     }
     terminal.value += "Finished the communication...\n";
 }
@@ -48,19 +48,22 @@ function show_add_submenu() {
     } 
 }
 
-async function add_spaceprobe() {
+async function add_astronaut() {
     const terminal = document.getElementById("terminal-add");
-    const name = document.getElementById("input-add-name").value;
-    const fabrication_year = parseInt(document.getElementById("input-add-fabrication").value);
+    const first_name = document.getElementById("input-add-first-name").value;
+    const last_name = document.getElementById("input-add-last-name").value;
+    const station_id = parseInt(document.getElementById("input-add-station").value);
+    const salary = parseInt(document.getElementById("input-add-salary").value);
+    const birth= document.getElementById("input-add-birth").value;
     terminal.value = "Sending request to mainframe...";
-    let res = await fetch('/api/v1/spaceprobes/new',
+    let res = await fetch('/api/v1/astronauts/new',
         {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('TOKEN')}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({name, fabrication_year}),
+            body: JSON.stringify({first_name, last_name, station_id, salary, birth}),
         }); 
     terminal.value += "Done\n";
     terminal.value += "Receiveing the response...";
@@ -68,46 +71,47 @@ async function add_spaceprobe() {
     terminal.value += "Done\n";
 
     if ('id' in res ) {
-        terminal.value += `Created new spaceprobe with id ${res.id}\n`;
+        terminal.value += `Created new astronaut with id ${res.id}\n`;
     } else {
-        terminal.value += "Could add spaceprobe to fleet 😭";
+        terminal.value += "Could add astronaut to fleet 😭\n";
     }
     terminal.value += "Finished the communication...\n";
-
 }
 
-function show_add_op_submenu() {
-    const submenu = document.getElementById("submenu-add-op");
-    const button = document.getElementById("btn-submenu-add-op");
+function show_auto_add_submenu() {
+    const submenu = document.getElementById("submenu-auto-add");
+    const button = document.getElementById("btn-auto-submenu");
     submenu.classList.remove("hidden");
     button.textContent = "Clean";
     button.onclick = () => {
         submenu.classList.add("hidden");
-        button.onclick = show_add_op_submenu;
+        button.onclick = show_auto_add_submenu;
         button.textContent = "Show SubMenu";
     } 
 }
 
-// <div class="hidden" id="submenu-add-op">
-//     <span><h4>Astronaut ID</h4><input placeholder="Name..." type="number" id="input-add-op-astronaut" /></span>
-//     <span><h4>Spaceprobe ID</h4><input placeholder="Name..." type="number" id="input-add-op-spaceprobe" /></span>
-//     <span><h4>Add operator</h4><button onclick="add_operator()" id="btn-add-op">Add operator</button></span>
-//     <textarea readonly="true" class="terminal" id="terminal-add-op"></textarea>
-// </div>
-async function add_operator() {
-    const terminal = document.getElementById("terminal-add-op");
-    const astronaut_id = parseInt(document.getElementById("input-add-op-astronaut").value);
-    const spaceprobe_id = parseInt(document.getElementById("input-add-op-spaceprobe").value);
-
-    const res = await fetch(`/api/v1/spaceprobes/${spaceprobe_id}/operator`,
+async function auto_add_astronaut() {
+    const terminal = document.getElementById("terminal-auto-add");
+    terminal.value = "Sending request to mainframe...";
+    let res = await fetch('/api/v1/astronauts/auto_add',
         {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('TOKEN')}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({astronaut_id}),
         }); 
+    terminal.value += "Done\n";
+    terminal.value += "Receiving the response...";
+    res = await res.json(); 
+    terminal.value += "Done\n";
+
+    if ('success' in res ) {
+        terminal.value += res.success+'\n';
+    } else {
+        terminal.value += "Could add astronaut to fleet 😭\n";
+    }
+    terminal.value += "Finished the communication...\n";
 }
 
 function show_modify_submenu() {
@@ -122,30 +126,33 @@ function show_modify_submenu() {
     } 
 }
 
-async function modify_spaceprobe() {
+async function modify_astronaut() {
     const terminal = document.getElementById("terminal-modify");
-    const spaceprobe_id = parseInt(document.getElementById("input-modify-spaceprobe").value);
-    const name = document.getElementById("input-modify-name").value;
-    const fabrication_year = parseInt(document.getElementById("input-modify-fabrication").value);
+    const astronaut_id = parseInt(document.getElementById("input-modify-id").value);
+    const first_name = document.getElementById("input-modify-first-name").value;
+    const last_name = document.getElementById("input-modify-last-name").value;
+    const station_id = parseInt(document.getElementById("input-modify-station").value);
+    const salary = parseInt(document.getElementById("input-modify-salary").value);
+    const birth= document.getElementById("input-modify-birth").value;
 
     terminal.value = "Sending request to mainframe...";
-    let res = await fetch(`/api/v1/spaceprobes/${spaceprobe_id}/change`,
+    let res = await fetch(`/api/v1/astronauts/${astronaut_id}/update`,
         {
             method: 'PUT',
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('TOKEN')}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({name, fabrication_year}),
+            body: JSON.stringify({first_name, last_name, station_id, salary, birth}),
         }); 
     terminal.value += "Done\n";
     terminal.value += "Receiveing the response...";
     res = await res.json(); 
     terminal.value += "Done\n";
-    if ('spaceprobe' in res) {
-        terminal.value += "Successfully updated spaceprobe\n";
+    if ('astronaut' in res) {
+        terminal.value += "Successfully updated astronaut\n";
     }  else {
-        terminal.value += "Could not update spaceprobe\n";
+        terminal.value += "Could not update astronaut\n";
     }
 }
     
@@ -161,12 +168,12 @@ function show_destroy_submenu() {
     }
 }
 
-async function destroy_spaceprobe() {
+async function destroy_astronaut() {
     const terminal = document.getElementById("terminal-destroy");
-    const spaceprobe_id = parseInt(document.getElementById("input-destroy-spaceprobe").value);
+    const astronaut_id = parseInt(document.getElementById("input-destroy-astronaut").value);
 
     terminal.value = "Sending request to mainframe...";
-    let res = await fetch(`/api/v1/spaceprobes/${spaceprobe_id}/destroy`,
+    let res = await fetch(`/api/v1/astronauts/${astronaut_id}/remove`,
         {
             method: 'DELETE',
             headers: {
@@ -179,8 +186,8 @@ async function destroy_spaceprobe() {
     res = await res.json(); 
     terminal.value += "Done\n";
     if ('success' in res) {
-        terminal.value += "Successfully nuked spaceprobe\n";
+        terminal.value += res.success+"\n"; 
     }  else {
-        terminal.value += "Could not destroy spaceprobe\n";
+        terminal.value += "Could not destroy astronaut\n";
     } 
 }

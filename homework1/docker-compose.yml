@@ -17,7 +17,6 @@ services:
     build: ./api
     volumes:
       - "./api/AsteroidMiningREST:/src"
-#      - "node_modules:/src/node_modules"
     environment:
       - PGHOST=database
       - PGUSER=postgres
@@ -31,24 +30,6 @@ services:
     depends_on:
       - database
     restart: always
-  
-#   users:
-#     build: ./users
-#     volumes:
-#       - "./users/api:/src"
-#     environment:
-#       - JWT_SECRET=secret
-#       - PGHOST=database
-#       - PGUSER=postgres
-#       - PGPASSWORD=postgres
-#       - PGDATABASE=users
-#       - SERVER_NAME=users
-# #      - HTTPS_ONLY=true
-#     ports:
-#       - "5000:5000"
-#     depends_on:
-#       - database
-#     restart: always
   
   database:
     build: ./model

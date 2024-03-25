@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unnamed Asteroid Mining Co.</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='styles/styles.css') }}>
+    <script type="text/javascript" src={{url_for('static', filename='js/stations.js')}}></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+</head>
+<body class="stations-page">
+    <h1>Welcome to the stations menu</h1>
+    <div class="get-all-probes">
+        <span>
+            <h3>Get all the stations</h3>
+            <button onclick="get_all_stations()" id="btn-get-all">Activate</button>
+        </span>
+        <textarea readonly="true" class="hidden terminal" id="terminal-get-all">
+        </textarea>
+    </div>
+    <div class="get-all-probes">
+        <span>
+            <h3>Add a new station to the fleet</h3>
+            <button onclick="show_add_submenu()" id="btn-submenu">Show SubMenu</button>
+        </span>
+        <div class="hidden" id="submenu-add">
+            <span><h4>Station name</h4><input placeholder="Name..." type="text" id="input-add-name" /></span>
+            <span><h4>Station location</h4><input placeholder="Earth" type="test" id="input-add-location" /></span>
+            <span><h4>Add station</h4><button onclick="add_station()" id="btn-add">Add to Fleet</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-add"></textarea>
+        </div>
+    </div>
+    <div class="get-all-probes">
+        <span>
+            <h3>Modify a station from the fleet</h3>
+            <button onclick="show_modify_submenu()" id="btn-submenu-modify">Show SubMenu</button>
+        </span>
+        <div class="hidden" id="submenu-modify">
+            <span><h4>Station ID</h4><input placeholder="Name..." type="number" id="input-modify-station" /></span>
+            <span><h4>Station name</h4><input placeholder="Name..." type="text" id="input-modify-name" /></span>
+            <span><h4>Station location</h4><input placeholder="Mars" type="text" id="input-modify-location" /></span>
+            <span><h4>Modify station</h4><button onclick="modify_station()" id="btn-modify">Modify</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-modify"></textarea>
+        </div>
+    </div>
+    <div class="get-all-probes">
+        <span>
+            <h3>Destroy a station from the fleet</h3>
+            <button onclick="show_destroy_submenu()" id="btn-submenu-destroy">Show SubMenu</button>
+        </span>
+        <div class="hidden" id="submenu-destroy">
+            <span><h4>Station ID</h4><input type="number" id="input-destroy-station" /></span>
+            <span><h4>Destory station</h4><button onclick="destroy_station()" id="btn-destroy">Destroy</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-destroy"></textarea>
+        </div>
+    </div>
+</body>
+</html>

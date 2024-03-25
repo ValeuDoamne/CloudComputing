@@ -51,7 +51,7 @@
         <div class="hidden" id="submenu-modify">
             <span><h4>Spaceprobe ID</h4><input placeholder="Name..." type="number" id="input-modify-spaceprobe" /></span>
             <span><h4>Spaceprobe name</h4><input placeholder="Name..." type="text" id="input-modify-name" /></span>
-            <span><h4>Spaceprobe Fabrication Year</h4><input placeholder="Name..." type="number" id="input-modify-fabrication" /></span>
+            <span><h4>Spaceprobe Fabrication Year</h4><input placeholder="Name..." type="text" id="input-modify-location" /></span>
             <span><h4>Modify spaceprobe</h4><button onclick="modify_spaceprobe()" id="btn-modify">Modify</button></span>
             <textarea readonly="true" class="terminal" id="terminal-modify"></textarea>
         </div>
@@ -59,12 +59,12 @@
     <div class="get-all-probes">
         <span>
             <h3>Destroy a spaceprobe from the fleet</h3>
-            <button onclick="show_destroy_submenu()" id="btn-submenu-destory">Show SubMenu</button>
+            <button onclick="show_destroy_submenu()" id="btn-submenu-destroy">Show SubMenu</button>
         </span>
-        <div class="hidden" id="submenu-destory">
-            <span><h4>Spaceprobe ID</h4><input placeholder="Name..." type="number" id="input-destory-spaceprobe" /></span>
-            <span><h4>Modify spaceprobe</h4><button onclick="destory_spaceprobe()" id="btn-destroy">Destroy</button></span>
-            <textarea readonly="true" class="terminal" id="terminal-destory"></textarea>
+        <div class="hidden" id="submenu-destroy">
+            <span><h4>Spaceprobe ID</h4><input placeholder="Name..." type="number" id="input-destroy-spaceprobe" /></span>
+            <span><h4>Destory spaceprobe</h4><button onclick="destroy_spaceprobe()" id="btn-destroy">Destroy</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-destroy"></textarea>
         </div>
     </div>
 </body>

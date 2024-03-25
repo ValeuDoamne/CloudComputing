@@ -12,7 +12,8 @@
   "dependencies": {
     "package.json": "^2.0.1",
     "pg": ">=8.2.0",
-    "jsonwebtoken": ">=9.0.2"
+    "jsonwebtoken": ">=9.0.2",
+    "axios": ">=1.6.8"
   },
   "keywords": [
     "asteroid",

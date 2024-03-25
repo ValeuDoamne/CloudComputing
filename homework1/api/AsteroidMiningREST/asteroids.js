@@ -2,6 +2,7 @@ import pg from 'pg';
 import randomInt from 'crypto';
 import handle_body_request from './handle_body_request.js';
 import https from 'https';
+import axios from 'axios';
 
 const client = new pg.Client();
 await client.connect()
@@ -74,18 +75,37 @@ async function handle_post(req, res) {
                 return;
             }
 
-            const random_number = randomInt.randomInt(656);
-            const options = new URL(`https://ssd-api.jpl.nasa.gov/sbdb_query.api?fields=full_name&full-prec=false&limit=10&limit-from=${random_number}&sb-class=MCA&sb-kind=a&sb-ns=n&sort=full_name&www=1`);
+            let number_of_asteroids = 1;
+            try {
+                number_of_asteroids = parseInt(body.number_of_asteroids); 
+                if (number_of_asteroids <= 0) {
+                    throw Error;
+                }
+            } catch (e) {
+                res.writeHead(400, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: `Cannot decode integer or have a negative/null one`}));
+                return;
+            }
 
-            const req = https.request(options, (res) => {
-                console.log(res);
-            });
+            const random_number = randomInt.randomInt(Math.floor(6562/number_of_asteroids));
+            const NASA_API = `https://ssd-api.jpl.nasa.gov/sbdb_query.api?fields=full_name&full-prec=false&limit=${body.number_of_asteroids}&limit-from=${random_number}&sb-class=MCA&sb-kind=a&sb-ns=n&sort=full_name&www=1`;
+            let number_of_added_asteroids = 0;
 
-            req.end();
+            try {
+                const response = await axios.get(NASA_API);
+                for(let x of response.data.data) {
+                    const response = await client.query('INSERT INTO asteroids(name) VALUES ($1) RETURNING id', [x[2].trim()]);
+                    if (response.rowCount > 0) {
+                        number_of_added_asteroids++;
+                    }
+                }
+            } catch (e) {
+                res.writeHead(500, 'Content-Type: application/json');
+                res.end(JSON.stringify({error: `Cannot ping the NASA API for getting asteroids`}));
+            }
             
-            //const response = await client.query('INSERT INTO asteroids(name) VALUES ($1) RETURNING id', [body.name]);
             res.writeHead(201, 'Content-Type: application/json');
-            res.end(JSON.stringify({id: 1337}));
+            res.end(JSON.stringify({success: `Added ${number_of_added_asteroids} asteroids`}));
         });
 
     } else not_found(res); 
@@ -113,7 +133,7 @@ async function handle_put(req, res) {
             }
             const response = await client.query('UPDATE asteroids SET name=$2 WHERE id=$1  RETURNING id,name', [id, body.name]);
             res.writeHead(200, { headers : 'Content-Type: application/json'});
-            res.end(JSON.stringify({asteroid: response.rows}));
+            res.end(JSON.stringify({asteroid: response.rows[0]}));
         });
     } else not_found(res);
 }

@@ -1,5 +1,7 @@
 import pg from 'pg';
 import handle_body_request from './handle_body_request.js';
+import axios from 'axios';
+import randomInt from 'crypto';
 
 const client = new pg.Client();
 await client.connect()
@@ -73,13 +75,36 @@ async function handle_post(req, res) {
             }
             if ((await check_station_id(body.station_id)) === false) {
                 res.writeHead(404, 'Content-Type: application/json');
-                res.end(JSON.stringify({error: 'The stations_id provided was not found'}));
+                res.end(JSON.stringify({error: 'The station_id provided was not found'}));
                 return;
             }
             const response = await client.query('INSERT INTO astronauts(station_id, first_name, last_name, salary, birth) VALUES ($1, $2, $3, $4, $5) RETURNING id', [body.station_id, body.first_name, body.last_name, body.salary, body.birth]);
             res.writeHead(201, 'Content-Type: application/json');
             res.end(JSON.stringify({id: response.rows[0]["id"]}));
         });
+    } else if (req.url == "/v1/astronauts/auto_add") {
+        const response = await axios.get("https://fakerapi.it/api/v1/users?_quantity=1");
+        console.log(response.data);
+        const salary = randomInt.randomInt(3300);
+        const rows = await client.query("SELECT id FROM stations");
+
+        if (rows.rowCount === 0) {
+            res.writeHead(500, 'Content-Type: application/json');
+            res.end(JSON.stringify({error: "There is no station"}));
+            return;
+        }
+        const station_id = rows.rows[0].id;
+
+        const record = response.data.data[0];
+
+        const db_response = await client.query('INSERT INTO astronauts(station_id, first_name, last_name, salary, birth) VALUES ($1, $2, $3, $4, $5) RETURNING id', [station_id, record.firstname, record.lastname, salary, "09/11/2021"]);
+
+        if (db_response.rowCount === 0) {
+            res.writeHead(500, "Content-Type: application/json");
+            res.end(JSON.stringify({error: "Could not add new astronaut"}));
+        }
+        res.writeHead(200, "Content-Type: application/json");
+        res.end(JSON.stringify({success: "Successfuly created astronaut with id: "+db_response.rows[0].id.toString()}));
     } else not_found(res); 
 }
 

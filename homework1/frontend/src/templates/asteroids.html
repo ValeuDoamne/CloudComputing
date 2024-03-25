@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Unnamed Asteroid Mining Co.</title>
     <link rel="stylesheet" href={{ url_for('static', filename='styles/styles.css') }}>
-    <script type="text/javascript" src={{url_for('static', filename='js/asteroids.js')}}></script>
+    <script type="text/javascript" src={{ url_for('static', filename='js/asteroids.js') }}></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
@@ -21,14 +21,24 @@
     </div>
     <div class="get-all-probes">
         <span>
-            <h3>Explore for asteroids</h3>
+            <h3>Manual Explore for asteroids</h3>
             <button onclick="show_add_submenu()" id="btn-submenu">Show SubMenu</button>
         </span>
         <div class="hidden" id="submenu-add">
             <span><h4>Asteroid name</h4><input placeholder="Name..." type="text" id="input-add-name" /></span>
-            <span><h4>Asteroid Fabrication Year</h4><input placeholder="Name..." type="number" id="input-add-fabrication" /></span>
-            <span><h4>Add asteroid</h4><button onclick="add_spaceprobe()" id="btn-add">Add to Fleet</button></span>
+            <span><h4>Add asteroid</h4><button onclick="add_asteroid()" id="btn-add">Add to known</button></span>
             <textarea readonly="true" class="terminal" id="terminal-add"></textarea>
+        </div>
+    </div>
+    <div class="get-all-probes">
+        <span>
+            <h3>Automatically Explore for asteroids</h3>
+            <button onclick="show_auto_add_submenu()" id="btn-submenu-auto">Show SubMenu</button>
+        </span>
+        <div class="hidden" id="submenu-auto-add">
+            <span><h4>Number of Asteroids</h4><input type="number" id="input-auto-add-number" /></span>
+            <span><h4>Add asteroid</h4><button onclick="auto_add_asteroid()" id="btn-add">Add to known</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-auto-add"></textarea>
         </div>
     </div>
     <div class="get-all-probes">
@@ -45,13 +55,13 @@
     </div>
     <div class="get-all-probes">
         <span>
-            <h3>Delete asteoids from records</h3>
-            <button onclick="show_destroy_submenu()" id="btn-submenu-modify">Show SubMenu</button>
+            <h3>Delete asteroids from records</h3>
+            <button onclick="show_destroy_submenu()" id="btn-submenu-destroy">Show SubMenu</button>
         </span>
-        <div class="hidden" id="submenu-modify">
-            <span><h4>Asteroid ID</h4><input placeholder="Name..." type="number" id="input-destory-asteroid" /></span>
-            <span><h4>Modify asteroid</h4><button onclick="destory_asteoid()" id="btn-destroy">Destroy</button></span>
-            <textarea readonly="true" class="terminal" id="terminal-destory"></textarea>
+        <div class="hidden" id="submenu-destroy">
+            <span><h4>Asteroid ID</h4><input placeholder="Name..." type="number" id="input-destroy-asteroid" /></span>
+            <span><h4>Delete asteroid</h4><button onclick="destroy_asteroid()" id="btn-destroy">Delete</button></span>
+            <textarea readonly="true" class="terminal" id="terminal-destroy"></textarea>
         </div>
     </div>
 </body>

@@ -148,3 +148,11 @@ span * {
 .asteroids-page {
     background-image: url('/static/imgs/asteroid_background.jpg');
 }
+
+.stations-page {
+    background-image: url('/static/imgs/space_station.jpg');
+}
+
+.astronauts-page {
+    background-image: url('/static/imgs/astronaut_background.png');
+}

@@ -67,10 +67,11 @@ def asteroids():
 
 @app.route("/astrounauts", methods=["GET"])
 def astronauts():
-    pass
+    return render_template('astronauts.html')
+
 @app.route("/stations", methods=["GET"])
 def stations():
-    pass
+    return render_template('stations.html')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=80, debug=True)
